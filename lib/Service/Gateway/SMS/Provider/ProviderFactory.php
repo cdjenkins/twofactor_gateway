@@ -30,41 +30,31 @@ class ProviderFactory {
 
 	/** @var IAppContainer */
 	private $container;
+	
+	private $provider = [
+		ClickatellCentral::PROVIDER_ID => ClickatellCentral::class,
+		ClickSend::PROVIDER_ID => ClickSend::class,
+		ClockworkSMS::PROVIDER_ID => ClockworkSMS::class,
+		EcallSMS::PROVIDER_ID => EcallSMS::class,
+		HuaweiE3531::PROVIDER_ID => HuaweiE3531::class,
+		PlaySMS::PROVIDER_ID => PlaySMS::class,
+		Plivo::PROVIDER_ID => Plivo::class,
+		PuzzelSMS::PROVIDER_ID => PuzzelSMS::class,
+		Ovh::PROVIDER_ID => Ovh::class,
+		SpryngSMS::PROVIDER_ID => SpryngSMS::class,
+		Sms77Io::PROVIDER_ID => Sms77Io::class,
+		VoipMs::PROVIDER_ID => VoipMs::class,
+		WebSms::PROVIDER_ID => WebSms::class
+	];
 
 	public function __construct(IAppContainer $container) {
 		$this->container = $container;
 	}
 
 	public function getProvider(string $id): IProvider {
-		switch ($id) {
-			case PuzzelSMS::PROVIDER_ID:
-				return $this->container->query(PuzzelSMS::class);
-			case PlaySMS::PROVIDER_ID:
-				return $this->container->query(PlaySMS::class);
-			case WebSms::PROVIDER_ID:
-				return $this->container->query(WebSms::class);
-			case ClockworkSMS::PROVIDER_ID:
-				return $this->container->query(ClockworkSMS::class);
-			case EcallSMS::PROVIDER_ID:
-				return $this->container->query(EcallSMS::class);
-			case VoipMs::PROVIDER_ID:
-				return $this->container->query(VoipMs::class);
-			case HuaweiE3531::PROVIDER_ID:
-				return $this->container->query(HuaweiE3531::class);
-			case Sms77Io::PROVIDER_ID:
-				return $this->container->query(Sms77Io::class);
-			case Ovh::PROVIDER_ID:
-				return $this->container->query(Ovh::class);
-			case SpryngSMS::PROVIDER_ID:
-				return $this->container->query(SpryngSMS::class);
-			case ClickatellCentral::PROVIDER_ID:
-				return $this->container->query(ClickatellCentral::class);
-			case ClickSend::PROVIDER_ID:
-				return $this->container->query(ClickSend::class);
-			case Plivo::PROVIDER_ID:
-				return $this->container->query(Plivo::class);
-			default:
-				throw new InvalidSmsProviderException("Provider <$id> does not exist");
-		}
+		$provider = $this->provider[$id] ?? '';
+		if ($provider === '')
+			throw new InvalidSmsProviderException("Provider <$id> does not exist");
+		return $this->container->query($provider);
 	}
 }
