@@ -25,4 +25,8 @@ namespace OCA\TwoFactorGateway\Service\Gateway\SMS\Provider;
 
 interface IProviderConfig {
 	public function isComplete(): bool;
+	
+	public function &getQuestions(): array;
+	
+	public function setAnswers();
 }

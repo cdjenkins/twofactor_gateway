@@ -319,26 +319,16 @@ class Configure extends Command {
 				break;
 			case 'plivo':
 				$config->setProvider($provider);
-				/** @var PlivoConfig $providerConfig */
 				$providerConfig = $config->getProvider()->getConfig();
-				
-				$authIdQuestion = new Question('Please enter your plivo authentication id (Auth ID): ');
-				$authId = $helper->ask($input, $output, $authIdQuestion);
-				
-				$authTokenQuestion = new Question('Please enter your plivo authentication token (Auth Token): ');
-				$authToken = $helper->ask($input, $output, $authTokenQuestion);
-				
-				$srcNumberQuestion = new Question("Please enter your plivo phone number (in E.164 format '+12345678901'): ");
-				$srcNumber = $helper->ask($input, $output, $srcNumberQuestion);
-				
-				$callbackUrlQuestion = new Question('Please enter your plivo callback url: ');
-				$callbackUrl = $helper->ask($input, $output, $callbackUrlQuestion);
-				
-				$providerConfig->setValue($providerConfig::AUTH_ID_KEY,$authId);
-				$providerConfig->setValue($providerConfig::AUTH_TOKEN_KEY, $authToken);
-				$providerConfig->setValue($providerConfig::CALLBACK_URL, $callbackUrl);
-				$providerConfig->setValue($providerConfig::SRC_NUMBER_KEY, $srcNumber);
-				
+				$questions = &$providerConfig->getQuestions();
+				foreach ($questions as $key => $question) {
+					$questions[$key] = $helper->ask($input, $output, new Question($question));
+				}
+				$providerConfig->setAnswers();
+				if ($providerConfig->isComplete())
+					$output->writeln("Wrote config correctly");
+				else
+					$output->writeln("Failed to write config correctly");
 				break;
 
 			default:

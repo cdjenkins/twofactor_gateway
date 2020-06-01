@@ -33,10 +33,10 @@ class PlivoConfig implements IProviderConfig {
 	/** @var IConfig */
 	private $config;
 	
-	public const AUTH_ID_KEY = 'plivo_auth_id';
-	public const AUTH_TOKEN_KEY = 'plivo_auth_token';
-	public const CALLBACK_URL = 'plivo_callback_url';
-	public const SRC_NUMBER_KEY = 'plivo_src_number';
+	private const AUTH_ID_KEY = 'plivo_auth_id';
+	private const AUTH_TOKEN_KEY = 'plivo_auth_token';
+	private const CALLBACK_URL = 'plivo_callback_url';
+	private const SRC_NUMBER_KEY = 'plivo_src_number';
 	
 	private const EXPECTED_KEYS = [
 		self::AUTH_ID_KEY,
@@ -44,6 +44,13 @@ class PlivoConfig implements IProviderConfig {
 		self::CALLBACK_URL,
 		self::SRC_NUMBER_KEY
 	];
+	
+	private $questions = [
+			self::AUTH_ID_KEY => 'Please enter your plivo authentication id (Auth ID): ',
+			self::AUTH_TOKEN_KEY => 'Please enter your plivo authentication token (Auth Token): ',
+			self::CALLBACK_URL => 'Please enter your plivo callback url: ',
+			self::SRC_NUMBER_KEY => "Please enter your plivo phone number (in E.164 format '+12345678901'): "
+		];
 
 	public function __construct(IConfig $config) {
 		$this->config = $config;
@@ -67,12 +74,22 @@ class PlivoConfig implements IProviderConfig {
 	
 	public function isComplete(): bool {
 		$set = $this->config->getAppKeys(Application::APP_NAME);
-		return count(array_intersect($set,self::EXPECTED_KEYS)) === count($expected);
+		return count(array_intersect($set,static::EXPECTED_KEYS)) === count(static::EXPECTED_KEYS);
 	}
 	
 	public function remove() {
-		foreach (self::EXPECTED_KEYS as $key) {
+		foreach (static::EXPECTED_KEYS as $key) {
 			$this->config->deleteAppValue(Application::APP_NAME, $key);
+		}
+	}
+	
+	public function &getQuestions(): array {
+		return $this->questions;
+	}
+	
+	public function setAnswers() {
+		foreach ($this->questions as $key => $answer) {
+			$this->setValue($key,$answer);
 		}
 	}
 }
