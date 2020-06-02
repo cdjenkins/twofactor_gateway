@@ -28,68 +28,24 @@ use OCA\TwoFactorGateway\AppInfo\Application;
 use OCA\TwoFactorGateway\Exception\ConfigurationException;
 use OCP\IConfig;
 
-class PlivoConfig implements IProviderConfig {
+class PlivoConfig extends BaseProviderConfig {
 
-	/** @var IConfig */
-	private $config;
-	
 	private const AUTH_ID_KEY = 'plivo_auth_id';
 	private const AUTH_TOKEN_KEY = 'plivo_auth_token';
 	private const CALLBACK_URL = 'plivo_callback_url';
 	private const SRC_NUMBER_KEY = 'plivo_src_number';
 	
-	private const EXPECTED_KEYS = [
+	protected const EXPECTED_KEYS = [
 		self::AUTH_ID_KEY,
 		self::AUTH_TOKEN_KEY,
 		self::CALLBACK_URL,
 		self::SRC_NUMBER_KEY
 	];
 	
-	private $questions = [
+	protected $questions = [
 			self::AUTH_ID_KEY => 'Please enter your plivo authentication id (Auth ID): ',
 			self::AUTH_TOKEN_KEY => 'Please enter your plivo authentication token (Auth Token): ',
 			self::CALLBACK_URL => 'Please enter your plivo callback url: ',
 			self::SRC_NUMBER_KEY => "Please enter your plivo phone number (in E.164 format '+12345678901'): "
 		];
-
-	public function __construct(IConfig $config) {
-		$this->config = $config;
-	}
-	
-	private function getInternalValue(string $key): string {
-		$val = $this->config->getAppValue(Application::APP_NAME, $key, null);
-		if (is_null($val)) {
-			throw new ConfigurationException();
-		}
-		return $val;
-	}
-	
-	public function getValue(string $key): string {
-		return $this->getInternalValue($key);
-	}
-
-	public function setValue(string $key, string $value) {
-		$this->config->setAppValue(Application::APP_NAME, $key, $value);
-	}
-	
-	public function isComplete(): bool {
-		$set = $this->config->getAppKeys(Application::APP_NAME);
-		return count(array_intersect($set,static::EXPECTED_KEYS)) === count(static::EXPECTED_KEYS);
-	}
-	
-	public function remove() {
-		foreach (static::EXPECTED_KEYS as $key) {
-			$this->config->deleteAppValue(Application::APP_NAME, $key);
-		}
-	}
-	
-	public function &getQuestions(): array {
-		return $this->questions;
-	}
-	
-	public function setAnswers() {
-		foreach ($this->questions as $key => $answer) {
-			$this->setValue($key,$answer);
-		}
-	}
 }

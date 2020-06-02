@@ -29,4 +29,6 @@ interface IProviderConfig {
 	public function &getQuestions(): array;
 	
 	public function setAnswers();
+	
+	public function remove();
 }
